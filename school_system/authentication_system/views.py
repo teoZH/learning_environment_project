@@ -1,8 +1,9 @@
 from django.contrib.auth import logout, authenticate, login
+from django.contrib.auth.models import User
 from django.db import transaction
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 
-from .forms import SignUpForm, ExtendedProfileInfoForm, LoginForm
+from .forms import SignUpForm, ExtendedProfileInfoForm, LoginForm, CustomPasswordChangeForm
 
 
 # Create your views here.
@@ -45,6 +46,24 @@ def register_user(request):
     }
 
     return render(request, 'register_form.html', context)
+
+
+def change_password(request, user_id, username):
+    user = get_object_or_404(User, pk=user_id, username=username)
+    valid = user.username == request.user.username and user.pk == request.user.pk
+    if not valid:
+        return render(request,'access/not_authorized.html')
+    if request.method == 'POST':
+        form = CustomPasswordChangeForm(user,request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('homepage')
+    else:
+        form = CustomPasswordChangeForm(request.user)
+    context = {
+        'form': form
+    }
+    return render(request, 'change_password.html', context)
 
 
 def logout_user(request):

@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+
+
+{% block content %}
+<div class="container border rounded shadow-lg mx-auto p-2" style="width:35%">
+    <img src="{{ user_info.image.url }}" alt="profile pic">
+    <ul>
+        <li>Username: {{ user_info.username }}</li>
+        <li>First Name: {{ user_info.first_name }}</li>
+        <li>Middle Name: {{ additional.middle_name }}</li>
+        <li>Last Name: {{ user_info.last_name }}</li>
+        <li>Email: {{ user_info.email }}</li>
+        <li>Age: {{ additional.age }}</li>
+        <li>User Type: {{ additional.user_type }}</li>
+        <li>Email: {{ user_info.email }}</li>
+    </ul>
+    <div class="d-flex justify-content-end">
+        <a href="{% url 'change_pass' request.user.pk request.user.username %}"><button class="btn btn-primary m-2">Change Password</button></a>
+        <a href="#"><button class="btn btn-primary m-2">Edit Profile</button></a>
+    </div>
+</div>
+
+{% endblock %}
