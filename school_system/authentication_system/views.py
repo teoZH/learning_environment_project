@@ -1,9 +1,15 @@
 from django.contrib.auth import logout, authenticate, login
 from django.contrib.auth.models import User
+from django.contrib.auth.tokens import default_token_generator
+
 from django.db import transaction
 from django.shortcuts import render, redirect, get_object_or_404
+from django.utils.http import urlsafe_base64_decode
 
-from .forms import SignUpForm, ExtendedProfileInfoForm, LoginForm, CustomPasswordChangeForm
+from .forms import SignUpForm, ExtendedProfileInfoForm, LoginForm, CustomPasswordChangeForm, \
+    CustomPasswordReset, CustomResetForm
+
+
 
 
 # Create your views here.
@@ -19,7 +25,6 @@ def login_user(request):
             return redirect('homepage')
         else:
             error = 'Wrong credentials. Try again!'
-            print(error)
     else:
         form = LoginForm()
     return render(request, 'login_form.html', {'login_form': form, 'error': error})
@@ -52,9 +57,9 @@ def change_password(request, user_id, username):
     user = get_object_or_404(User, pk=user_id, username=username)
     valid = user.username == request.user.username and user.pk == request.user.pk
     if not valid:
-        return render(request,'access/not_authorized.html')
+        return render(request, 'access/not_authorized.html')
     if request.method == 'POST':
-        form = CustomPasswordChangeForm(user,request.POST)
+        form = CustomPasswordChangeForm(user, request.POST)
         if form.is_valid():
             form.save()
             return redirect('homepage')
@@ -64,6 +69,34 @@ def change_password(request, user_id, username):
         'form': form
     }
     return render(request, 'change_password.html', context)
+
+
+def reset_password(request):
+    if request.method == 'POST':
+        form = CustomPasswordReset(request.POST)
+        if form.is_valid():
+            data = form.cleaned_data['email']
+            user = get_object_or_404(User, email=data)
+            form.save(subject_template_name='pass_reset.txt', email_template_name='instructions.txt', request=request)
+    form = CustomPasswordReset()
+    return render(request, 'reset_password.html', {'form': form})
+
+
+def set_password(request, uidb64, token):
+    token_generator = default_token_generator
+    user_id = int(urlsafe_base64_decode(uidb64))
+    user = get_object_or_404(User, pk=user_id)
+    if token_generator.check_token(user, token):
+        if request.method == 'POST':
+            form = CustomResetForm(user, request.POST)
+            if form.is_valid():
+                form.save()
+                return render(request, 'success_page.html')
+        else:
+            form = CustomResetForm(user)
+        return render(request, 'set_new_password.html', {"form": form})
+    else:
+        return render(request, 'access/not_authorized.html')
 
 
 def logout_user(request):
