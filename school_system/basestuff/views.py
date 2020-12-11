@@ -12,7 +12,13 @@ def index(request):
 def profile(request, pk):
     user = get_object_or_404(User, pk=pk)
     add_info = ExtendBaseUser.objects.get(user=user)
-    return render(request, 'profile/profile_page.html', {
-        'user_info': user,
-        'additional': add_info
+    if add_info.user_type == 'teacher':
+        return render(request, 'teacher_profile.html', {
+            'user_info': user,
+            'additional': add_info
+    })
+
+    return render(request,'profile/profile_page.html',{
+            'user_info': user,
+            'additional': add_info
     })
