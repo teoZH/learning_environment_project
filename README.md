@@ -1,5 +1,6 @@
-# learning_environment_project
-
-   This is a web projecт which will be related to creating a new platform about
-studying, attending online classes, creating lessons and so on..
+# KanbanSYSTEM
+  Freshly started project 
+  What is Kanban board ?
+  ---For more information: https://en.wikipedia.org/wiki/Kanban_board
+  Project_ideas in project_ideas.txt
 
