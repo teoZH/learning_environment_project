@@ -1,0 +1,7 @@
+<div class="container mx-auto w-75">
+    <form method="post">
+        {% csrf_token %}
+        {{ form }}
+        <button type="submit">Create</button>
+    </form>
+</div>

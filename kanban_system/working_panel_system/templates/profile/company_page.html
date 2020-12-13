@@ -1,0 +1,8 @@
+{% if companies %}
+    {% for company in companies %}
+        <h4>{{ company }}</h4>
+    {% endfor %}
+{% else %}
+<h2>You have no companies!</h2>
+{% endif %}
+<a class="btn btn-primary btn-block w-25 p-4" href="{% url 'create_company' request.user.pk %}" role="button">Create new company!</a>

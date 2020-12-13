@@ -13,21 +13,22 @@ class ExtendedUser(models.Model):
 
 
 class Company(models.Model):
-    title = models.CharField(max_length=20,blank=False)
-    users = models.ManyToManyField(User)
+    title = models.CharField(max_length=20, blank=False)
+    employee = models.ManyToManyField(User, related_name='employee')
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
 
 
 class Todo(models.Model):
-    title = models.CharField(max_length=20,blank=False)
-    description = models.TextField(max_length=500,blank=False)
+    title = models.CharField(max_length=20, blank=False)
+    description = models.TextField(max_length=500, blank=False)
     date = models.DateTimeField()
     in_progress = models.BooleanField(default=False)
     is_done = models.BooleanField(default=False)
-    company = models.ForeignKey(Company, on_delete=models.CASCADE,default='empty')
-    user = models.ForeignKey(User,on_delete=models.CASCADE,default='empty')
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
 
 class Notes(models.Model):
     title = models.CharField(max_length=20, blank=False)
     description = models.TextField(max_length=300, blank=False)
-    todo = models.ForeignKey(Todo,on_delete=models.CASCADE)
+    todo = models.ForeignKey(Todo, on_delete=models.CASCADE)
