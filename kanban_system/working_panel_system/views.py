@@ -1,4 +1,5 @@
 from django.contrib.auth.models import User
+from django.db.models import QuerySet
 from django.shortcuts import render, get_object_or_404, redirect
 from base_stuff_system.models import ExtendedUser, Todo, Company, Notes
 from .forms import TodoForm, NotesForm, CompanyForm, create_choicesPersonalCompany
@@ -28,8 +29,15 @@ def create_todo(request, user_id):
             return redirect('show_user_kanban', request.user.pk)
     else:
         form = TodoForm()
-        form.fields['user'].choices = (('user', 'user'), ('shit', 'shit'))
+        form.fields['company'].queryset = Company.objects.filter(user=request.user)
     return render(request, 'create_some_todo.html', {'form': form})
+
+
+def start_todo(request, user_id, kanban_id):
+    todo = Todo.objects.get(pk=kanban_id)
+    todo.in_progress = True
+    todo.save()
+    return redirect('show_user_kanban', request.user.pk)
 
 
 def show_companies(request, user_id):
@@ -38,8 +46,14 @@ def show_companies(request, user_id):
 
 
 def create_company(request, user_id):
-    form = CompanyForm()
-    form.fields['user'].choices = create_choicesPersonalCompany(user_id)
+    if request.method == 'POST':
+        form = CompanyForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('show_user_companies', request.user.pk)
+    else:
+        form = CompanyForm()
+        form.fields['user'].queryset = User.objects.filter(pk=user_id)
     return render(request, 'create_new_company.html', {'form': form})
 
 

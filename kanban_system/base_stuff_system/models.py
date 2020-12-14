@@ -27,6 +27,12 @@ class Todo(models.Model):
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 
+    def __str__(self):
+        return self.title
+
+    def __repr__(self):
+        return self.title
+
 
 class Notes(models.Model):
     title = models.CharField(max_length=20, blank=False)

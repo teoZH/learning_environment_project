@@ -1,23 +1,24 @@
 from base_stuff_system.models import Company, Todo, Notes
 from django import forms
 from django.contrib.auth.models import User
+from django.db.models import QuerySet
 from django.forms.models import ModelChoiceField
 
 
 class CompanyForm(forms.ModelForm):
     class Meta:
         model = Company
-        fields = ('title','user')
+        fields = ('title', 'user')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[field].widget.attrs.update({'class': 'form-control'})
-        self.fields['user'].disabled = True
 
 
 def create_choicesPersonalCompany(user_id):
-    return (User.objects.get(pk=user_id), 'myself'),
+    user = User.objects.get(pk=user_id)
+    return [(user_id, (str(user)))]
 
 
 class TodoForm(forms.ModelForm):
