@@ -1,0 +1,18 @@
+#side-bar-pos {
+    position: fixed;
+    height: 40%;
+    width: 18%;
+}
+
+
+#kanban-style {
+    margin-top: 50px;
+    margin-left:330px;
+    width: 66%;
+
+}
+
+
+#dashboard {
+  height:500px;
+}

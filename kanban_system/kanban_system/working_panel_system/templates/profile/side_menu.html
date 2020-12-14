@@ -1,0 +1,12 @@
+<li class="nav-item">
+    <a class="nav-link text-white" href="{% url 'profile_page' request.user.pk %}">My profile</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link text-white" href="{% url 'show_user_kanban' request.user.pk %}">My kanban</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link text-white" href="{% url 'show_user_companies' request.user.pk %}">My companies</a>
+</li>
+<li class="nav-item">
+    <a class="nav-link text-white" href="{% url 'show_user_work_for' request.user.pk %}">HIRED</a>
+</li>
