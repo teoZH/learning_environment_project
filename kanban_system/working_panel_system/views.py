@@ -3,6 +3,7 @@ from django.db.models import QuerySet
 from django.shortcuts import render, get_object_or_404, redirect
 from base_stuff_system.models import ExtendedUser, Todo, Company, Notes
 from .forms import TodoForm, NotesForm, CompanyForm, create_choicesPersonalCompany
+from django.db.models import ObjectDoesNotExist
 
 
 def my_profile(request, user_id):
@@ -14,6 +15,7 @@ def my_profile(request, user_id):
 
 def show_pers_kanban(request, user_id):
     todos = Todo.objects.filter(user=request.user)
+
     return render(request, 'show_user_kanban.html', {'todos': todos})
 
 
@@ -41,8 +43,36 @@ def start_todo(request, user_id, kanban_id):
 
 
 def show_companies(request, user_id):
-    companies = Company.objects.all()
-    return render(request, 'show_user_companies.html', {'companies': companies})
+    companies = Company.objects.filter(user=request.user)
+    context = {
+        'companies': companies,
+        'success': None,
+        'error': None
+    }
+
+    if request.method == 'POST':
+        username = request.POST['username']
+        try:
+            company = Company.objects.get(pk=request.POST['company'])
+            employees = company.employee.all()
+            if company.user != request.user:
+                context['error'] = 'Invalid request!'
+        except ObjectDoesNotExist:
+            context['error'] = 'Invalid request!'
+
+        try:
+            user = User.objects.get(username=username)
+            if request.user == user:
+                context['error'] = 'You cannot add yourself!'
+            elif user in employees:
+                context['error'] = 'This user is already added!'
+            else:
+                company.employee.add(user)
+                context['success'] = f'User {username} added successfully'
+        except ObjectDoesNotExist:
+            context['error'] = 'Invalid username! Please try again!'
+    print(context)
+    return render(request, 'show_user_companies.html', context)
 
 
 def create_company(request, user_id):

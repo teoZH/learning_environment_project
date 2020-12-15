@@ -1,8 +1,51 @@
+
+<a class="btn btn-primary btn-block w-25 p-4 mb-3" href="{% url 'create_company' request.user.pk %}" role="button">Create new company!</a>
+
 {% if companies %}
-    {% for company in companies %}
-        <h4>{{ company }}</h4>
-    {% endfor %}
+    {% if success %}
+        <h5 class="text-success"> {{ success }} </h5>
+    {% endif %}
+    {% if error %}
+        <h5 class="text-danger"> {{ error }} </h5>
+    {% endif %}
+    <div class="row row-cols-3">
+            {% for company in companies %}
+                <div class="col border rounded mb-1 ">
+                    <div class="w-100">{{ company }}</div>
+                    <div class="d-flex m-1 justify-content-end">
+                        <button type="button" class="btn btn-success" data-toggle="modal" data-target="#{{ company.title }}" data-whatever="@mdo">Add user</button>
+                    </div>
+
+                    <div class="modal fade" id="{{ company.title }}" tabindex="-1" role="dialog" aria-labelledby="{{ company.title }}Label" aria-hidden="true">
+                      <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                          <div class="modal-header">
+                            <h5 class="modal-title" id="{{ company.title }}Label">Here you can add users to your company!</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                              <span aria-hidden="true">&times;</span>
+                            </button>
+                          </div>
+                          <div class="modal-body">
+                            <form method="post" id="{{ company }}-form">
+                              {% csrf_token %}
+                              <div class="form-group">
+                                  <label for="{{ company.title }}ID" class="col-form-label">Type a <strong>valid</strong> username! </label>
+                                  <input type="hidden" name="company" value="{{ company.pk }}">
+                                  <input type="text" class="form-control" id="{{ company.title }}ID" name="username">
+                              </div>
+                            </form>
+                          </div>
+                          <div class="modal-footer">
+                              <button type="submit" class="btn btn-danger" form="{{ company }}-form">Submit</button>
+                              <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                </div>
+            {% endfor %}
+
+    </div>
 {% else %}
 <h2>You have no companies!</h2>
 {% endif %}
-<a class="btn btn-primary btn-block w-25 p-4" href="{% url 'create_company' request.user.pk %}" role="button">Create new company!</a>

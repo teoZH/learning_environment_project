@@ -10,10 +10,26 @@
                 {% if not todo.in_progress %}
         <div class="container d-flex flex-column p-1 border mb-1 rounded align-items-center">
             <h5>{{ todo }}</h5>
+            {% if todo.company %}
+            <div class="d-flex">
+                <h6>Company: {{ todo.company }}</h6>
+                <small class="ml-2">Assigned to: {{ todo.user }} </small>
+                    {% if todo.user != request.user %}
+                        <div>Assigned to {{ todo.user }} </div>
+                    {% endif %}
+            </div>
+            {% else %}
+            <h6>Personal Todo</h6>
+            {% endif %}
             <div class="btn-group dropleft">
-                    <button class="btn-sm btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <button class="btn-sm btn-info mr-1 dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Show more
                     </button>
+                    {% if todo.company and todo.user == request.user %}
+                    <button class="btn-sm btn-dark  dropdown-toggle" type="button" data-toggle="collapse" data-target="#num-{{ todo.pk }}" aria-expanded="false" aria-controls="#num-{{ todo.pk }}">
+                        Assign to
+                    </button>
+                    {% endif %}
                 <div class="dropdown-menu bg-dark p-1" aria-labelledby="dropdownMenuButton">
                     <a class="dropdown-item bg-primary " href="#">Description</a>
                     <a class="dropdown-item bg-success " href="{% url 'start_to_do' request.user.pk todo.pk %}">Start</a>
@@ -24,6 +40,22 @@
                     {% endif %}
                 </div>
             </div>
+
+            <div class="collapse" id="num-{{ todo.pk }}">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-flex justify-content-between">
+                            <div class="form-group">
+                                <label for="companies-users">Select an user:</label>
+                                <select class="form-control" id="companies-users">
+                                    <option value="3">shitface</option>
+                                    <option value="3">fuckface</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn h-50 m-4 btn-danger">Submit</button>
+                        </div>
+                    </form>
+                </div>
         </div>
                 {% endif %}
             {% endfor %}
@@ -38,6 +70,11 @@
                 {% if todo.in_progress %}
         <div class="container d-flex flex-column p-1 border mb-1 rounded align-items-center">
             <h5>{{ todo }}</h5>
+            {% if todo.company %}
+            <h6>Company: {{ todo.company }}</h6>
+            {% else %}
+            <h6>Personal Todo</h6>
+            {% endif %}
             <div class="btn-group dropleft">
                     <button class="btn-sm btn-info dropdown-toggle" type="button" id="dropdownMenuButtonSec" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                             Show more

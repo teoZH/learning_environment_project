@@ -15,7 +15,13 @@ class ExtendedUser(models.Model):
 class Company(models.Model):
     title = models.CharField(max_length=20, blank=False)
     employee = models.ManyToManyField(User, related_name='employee')
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
+
+    def __str__(self):
+        return self.title
+
+    def __repr__(self):
+        return self.title
 
 
 class Todo(models.Model):
