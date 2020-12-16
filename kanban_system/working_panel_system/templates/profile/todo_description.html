@@ -1,0 +1,18 @@
+<div class="d-flex flex-column">
+    <div class="container mt-1 border rounded">
+        <h2 class="m-2">{{ todo.title }}</h2>
+        <div class="container m-2 border rounded w-75">
+            <p class="lead">{{ todo.description }}</p>
+        </div>
+        <div class="d-flex justify-content-end m-2">
+            <div class="btn-group">
+                <a href="#" role="button" class="btn btn-lg btn-success mr-2 rounded">Add note</a>
+                {% if request.user == todo.user %}
+                    <a href="{% url 'edit_todo' request.user.pk todo.pk %}" role="button" class="btn btn-lg btn-primary mr-2 rounded">Edit</a>
+                    <a href="{% url 'delete_todo' request.user.pk todo.pk %}" role="button" class="btn btn-lg btn-danger rounded">Delete</a>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+

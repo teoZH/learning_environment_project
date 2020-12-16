@@ -13,10 +13,11 @@
             {% if todo.company %}
             <div class="d-flex">
                 <h6>Company: {{ todo.company }}</h6>
-                <small class="ml-2">Assigned to: {{ todo.user }} </small>
-                    {% if todo.user != request.user %}
-                        <div>Assigned to {{ todo.user }} </div>
-                    {% endif %}
+                {% if todo.user == request.user %}
+                    <small class="ml-2">Assigned to: myself </small>
+                {% else %}
+                    <small>Assigned to {{ todo.user }} </small>
+                {% endif %}
             </div>
             {% else %}
             <h6>Personal Todo</h6>
@@ -31,12 +32,12 @@
                     </button>
                     {% endif %}
                 <div class="dropdown-menu bg-dark p-1" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item bg-primary " href="#">Description</a>
+                    <a class="dropdown-item bg-primary " href="{% url 'show_todo' request.user.pk todo.pk %}">Description</a>
                     <a class="dropdown-item bg-success " href="{% url 'start_to_do' request.user.pk todo.pk %}">Start</a>
                     <a class="dropdown-item bg-warning " href="#">Add note</a>
                     {% if todo.user == request.user %}
-                        <a class="dropdown-item bg-danger" href="#">Edit</a>
-                        <a class="dropdown-item bg-light" href="#">Delete </a>
+                        <a class="dropdown-item bg-danger" href="{% url 'edit_todo' request.user.pk todo.pk %}">Edit</a>
+                        <a class="dropdown-item bg-light" href="{% url 'delete_todo' request.user.pk todo.pk %}">Delete </a>
                     {% endif %}
                 </div>
             </div>
@@ -71,7 +72,14 @@
         <div class="container d-flex flex-column p-1 border mb-1 rounded align-items-center">
             <h5>{{ todo }}</h5>
             {% if todo.company %}
-            <h6>Company: {{ todo.company }}</h6>
+            <div class="d-flex">
+                <h6>Company: {{ todo.company }}</h6>
+                {% if todo.user == request.user %}
+                    <small class="ml-2">Assigned to: myself </small>
+                {% else %}
+                    <small>Assigned to {{ todo.user }} </small>
+                {% endif %}
+            </div>
             {% else %}
             <h6>Personal Todo</h6>
             {% endif %}
@@ -84,8 +92,8 @@
                     <a class="dropdown-item bg-success " href="#">Finish</a>
                     <a class="dropdown-item bg-warning " href="#">Add note</a>
                     {% if todo.user == request.user %}
-                        <a class="dropdown-item bg-danger" href="#">Edit</a>
-                        <a class="dropdown-item bg-light" href="#">Delete </a>
+                        <a href="{% url 'edit_todo' request.user.pk todo.pk %}" role="button" class="btn btn-lg btn-primary mr-2 rounded">Edit</a>
+                        <a class="dropdown-item bg-light" href="{% url 'delete_todo' request.user.pk todo.pk %}">Delete </a>
                     {% endif %}
                 </div>
             </div>

@@ -1,5 +1,6 @@
 from django.contrib.auth.models import User
 from django.db.models import QuerySet
+from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from base_stuff_system.models import ExtendedUser, Todo, Company, Notes
 from .forms import TodoForm, NotesForm, CompanyForm, create_choicesPersonalCompany
@@ -33,6 +34,50 @@ def create_todo(request, user_id):
         form = TodoForm()
         form.fields['company'].queryset = Company.objects.filter(user=request.user)
     return render(request, 'create_some_todo.html', {'form': form})
+
+
+def show_todo_description(request, user_id, todo_id):
+    todo = Todo.objects.get(pk=todo_id)
+
+    context = {
+        'todo': todo
+    }
+
+    # should be added logic for notes!!!
+    return render(request, 'show_description.html', context)
+
+
+def edit_user_todo(request, user_id, todo_id):
+    try:
+        todo = Todo.objects.get(pk=todo_id)
+        if todo.user != request.user:
+            return render(request, 'access/not_authorized.html')
+    except ObjectDoesNotExist:
+        return render(request, 'access/not_authorized.html')
+    if request.method == 'POST':
+        form = TodoForm(request.POST, instance=todo)
+        if form.is_valid():
+            form.save()
+            return redirect('show_user_kanban', request.user.pk)
+    else:
+        form = TodoForm(instance=todo)
+        form.fields['company'].queryset = Company.objects.filter(user=request.user)
+    context = {
+        'form': form
+    }
+    return render(request, 'create_some_todo.html', context)
+
+
+def delete_user_todo(request, user_id, todo_id):
+    try:
+        user = User.objects.get(pk=user_id)
+        todo = Todo.objects.get(pk=todo_id)
+        if todo.user != user or todo.user != request.user:
+            return render(request, 'access/not_authorized.html')
+        todo.delete()
+    except ObjectDoesNotExist:
+        return render(request, 'access/not_authorized.html')
+    return redirect('show_user_kanban', request.user.pk)
 
 
 def start_todo(request, user_id, kanban_id):
