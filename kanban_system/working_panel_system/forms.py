@@ -37,9 +37,11 @@ class TodoForm(forms.ModelForm):
 class NotesForm(forms.ModelForm):
     class Meta:
         model = Notes
-        fields = '__all__'
+        fields = ('title', 'description')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
         for field in self.fields:
             self.fields[field].widget.attrs.update({'class': 'form-control'})
+
+        self.fields['description'].widget.attrs.update({"rows": "5"})

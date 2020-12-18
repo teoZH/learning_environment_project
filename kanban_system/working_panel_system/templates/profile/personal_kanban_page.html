@@ -32,9 +32,8 @@
                     </button>
                     {% endif %}
                 <div class="dropdown-menu bg-dark p-1" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item bg-primary " href="{% url 'show_todo' request.user.pk todo.pk %}">Description</a>
+                    <a class="dropdown-item bg-warning" href="{% url 'show_todo' request.user.pk todo.pk %}">Description</a>
                     <a class="dropdown-item bg-success " href="{% url 'start_to_do' request.user.pk todo.pk %}">Start</a>
-                    <a class="dropdown-item bg-warning " href="#">Add note</a>
                     {% if todo.user == request.user %}
                         <a class="dropdown-item bg-danger" href="{% url 'edit_todo' request.user.pk todo.pk %}">Edit</a>
                         <a class="dropdown-item bg-light" href="{% url 'delete_todo' request.user.pk todo.pk %}">Delete </a>
@@ -48,9 +47,15 @@
                         <div class="d-flex justify-content-between">
                             <div class="form-group">
                                 <label for="companies-users">Select an user:</label>
-                                <select class="form-control" id="companies-users">
-                                    <option value="3">shitface</option>
-                                    <option value="3">fuckface</option>
+                                <input type="hidden" value="{{ todo.pk }}" name="todo">
+                                <select class="form-control" id="companies-users" name="username">
+                                    {% for group_name,queryset in groups.items %}
+                                        {% if group_name == todo.company.title %}
+                                            {% for employee in queryset %}
+                                                <option value="{{ employee }}">{{ employee.username }}</option>
+                                            {% endfor %}
+                                        {% endif %}
+                                    {% endfor %}
                                 </select>
                             </div>
                             <button type="submit" class="btn h-50 m-4 btn-danger">Submit</button>
@@ -88,9 +93,8 @@
                             Show more
                     </button>
                 <div class="dropdown-menu bg-dark p-1" aria-labelledby="dropdownMenuButtonSec">
-                    <a class="dropdown-item bg-primary " href="#">Description</a>
-                    <a class="dropdown-item bg-success " href="#">Finish</a>
-                    <a class="dropdown-item bg-warning " href="#">Add note</a>
+                    <a class="dropdown-item bg-warning" href="#">Description</a>
+                    <a class="dropdown-item bg-success" href="#">Finish</a>
                     {% if todo.user == request.user %}
                         <a href="{% url 'edit_todo' request.user.pk todo.pk %}" role="button" class="btn btn-lg btn-primary mr-2 rounded">Edit</a>
                         <a class="dropdown-item bg-light" href="{% url 'delete_todo' request.user.pk todo.pk %}">Delete </a>
@@ -110,3 +114,7 @@
 
     </div>
 </div>
+
+
+
+

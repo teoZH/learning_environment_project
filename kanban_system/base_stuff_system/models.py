@@ -44,3 +44,4 @@ class Notes(models.Model):
     title = models.CharField(max_length=20, blank=False)
     description = models.TextField(max_length=300, blank=False)
     todo = models.ForeignKey(Todo, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
