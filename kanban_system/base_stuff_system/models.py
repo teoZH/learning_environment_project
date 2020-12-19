@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from datetime import date
 
 
 # Create your models here.
@@ -25,11 +26,12 @@ class Company(models.Model):
 
 
 class Todo(models.Model):
-    title = models.CharField(max_length=20, blank=False)
+    title = models.CharField(max_length=20, blank=False,unique_for_date='date')
     description = models.TextField(max_length=500, blank=False)
-    date = models.DateTimeField()
+    date = models.DateTimeField(auto_now_add=True)
     in_progress = models.BooleanField(default=False)
     is_done = models.BooleanField(default=False)
+    form_error = models.BooleanField(default=False)
     company = models.ForeignKey(Company, on_delete=models.CASCADE, null=True)
     user = models.ForeignKey(User, on_delete=models.CASCADE, null=True)
 

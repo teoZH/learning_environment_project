@@ -11,7 +11,7 @@
 
                 <a href="#{{todo.title}}" role="button" data-toggle="collapse"  aria-expanded="false" aria-controls="{{ todo.title }}" class="btn btn-lg btn-success mr-2 rounded">Add note</a>
 
-                {% if request.user == todo.user %}
+                {% if request.user == todo.company.user %}
                     <a href="{% url 'edit_todo' request.user.pk todo.pk %}" role="button" class="btn btn-lg btn-primary mr-2 rounded">Edit</a>
                     <a href="{% url 'delete_todo' request.user.pk todo.pk %}" role="button" class="btn btn-lg btn-danger rounded">Delete</a>
                 {% endif %}

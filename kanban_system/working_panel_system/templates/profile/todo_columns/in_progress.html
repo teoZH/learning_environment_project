@@ -1,0 +1,80 @@
+<div class="d-flex border w-100 border-top-0 border-left-0 border-right-0 p-1 m-1 justify-content-around">
+    <h3>IN PROGRESS</h3>
+</div>
+{% if todos %}
+{% for todo in todos %}
+{% if todo.in_progress %}
+<div class="container d-flex flex-column p-1 border mb-1 rounded align-items-center">
+    <h5>{{ todo }}</h5>
+    <div class="d-flex p-1 m-1">
+        {% if todo.company %}
+        {% if todo.company.user == request.user and todo.user == request.user %}
+        <small><strong>{{ todo.company }}(own):</strong> Company Todo</small>
+        {% elif todo.company.user == request.user  %}
+        <small><strong>{{ todo.company }}(own):</strong> Assigned to: {{ todo.user.first_name }} {{ todo.user.last_name }}</small>
+        {% else %}
+        <small><strong>{{ todo.company }}(hired):</strong> Assigned by: {{ todo.company.user.first_name }} {{ todo.company.user.last_name }}</small>
+        {% endif %}
+        {% else %}
+        <small><strong>Personal Todo</strong></small>
+        {% endif %}
+    </div>
+    <div class="btn-group dropleft mb-1">
+        <button class="btn-sm btn-info mr-1 dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Show more
+        </button>
+        {% if todo.company.user == request.user %}
+        <button class="btn-sm btn-dark  dropdown-toggle" type="button" data-toggle="collapse" data-target="#num-{{ todo.pk }}" aria-expanded="true" aria-controls="#num-{{ todo.pk }}">
+            Assign to
+        </button>
+        {% endif %}
+        <div class="dropdown-menu bg-dark p-1" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item bg-warning" href="{% url 'show_todo' request.user.pk todo.pk %}">Description</a>
+            <a class="dropdown-item bg-dark text-white" href="{% url 'finish_the_todo' request.user.pk todo.pk %}">Finish It!</a>
+            {% if todo.company %}
+            {% if todo.company.user == request.user %}
+            <a class="dropdown-item bg-danger" href="{% url 'edit_todo' request.user.pk todo.pk %}">Edit</a>
+            <a class="dropdown-item bg-light" href="{% url 'delete_todo' request.user.pk todo.pk %}">Delete </a>
+            {% endif %}
+            {% else %}
+            <a class="dropdown-item bg-danger" href="{% url 'edit_todo' request.user.pk todo.pk %}">Edit</a>
+            <a class="dropdown-item bg-light" href="{% url 'delete_todo' request.user.pk todo.pk %}">Delete </a>
+            {% endif %}
+        </div>
+    </div>
+    {% if todo.form_error %}
+        <div class="collapse show" id="num-{{ todo.pk }}">
+    {% else %}
+        <div class="collapse" id="num-{{ todo.pk }}">
+    {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <div class="d-flex justify-content-between">
+                <div class="form-group">
+                    <label for="companies-users">Select an user:</label>
+                    <input type="hidden" value="{{ todo.pk }}" name="todo">
+                    {% if groups %}
+                    <select class="form-control" id="companies-users" name="username">
+                        {% for group_name,queryset in groups.items %}
+                        {% if group_name == todo.company.title %}
+                        {% for employee in queryset %}
+                        <option value="{{ employee }}">{{ employee.username }}</option>
+                        {% endfor %}
+                        {% endif %}
+                        {% endfor %}
+                    </select>
+                    {% else %}
+                    <div class="text-danger">You have no employees or companies!</div>
+                    {% endif %}
+                </div>
+                <button type="submit" class="btn h-50 m-4 btn-danger">Submit</button>
+            </div>
+        </form>
+            {% if todo.form_error %}
+                <div class="text-danger">Choose someone else!</div>
+            {% endif %}
+    </div>
+</div>
+{% endif %}
+{% endfor %}
+{% endif %}

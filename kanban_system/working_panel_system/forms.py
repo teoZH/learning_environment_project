@@ -8,7 +8,7 @@ from django.forms.models import ModelChoiceField
 class CompanyForm(forms.ModelForm):
     class Meta:
         model = Company
-        fields = ('title', 'user')
+        fields = ('title',)
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -16,15 +16,13 @@ class CompanyForm(forms.ModelForm):
             self.fields[field].widget.attrs.update({'class': 'form-control'})
 
 
-def create_choicesPersonalCompany(user_id):
-    user = User.objects.get(pk=user_id)
-    return [(user_id, (str(user)))]
+
 
 
 class TodoForm(forms.ModelForm):
     class Meta:
         model = Todo
-        exclude = ('user','in_progress','is_done')
+        fields = ('title', 'description','company')
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
