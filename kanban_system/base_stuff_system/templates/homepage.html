@@ -2,8 +2,14 @@
 
 
 {% block content %}
-<!--SHOULD ADD SOME STUFF-->
-<h1>WANT TO ORGANIZE YOUR WORK?</h1>
-<h1>WANT TO ORGANIZE YOUR COMPANY'S WORK</h1>
-<h1>THAT'S YOUR PLACE</h1>
+<div class="jumbotron mx-auto mt-5" >
+  <h3 class="display-4">You need to organize your work?</h3>
+    <h3 class="display-4">You need to organize your  company work?</h3>
+  <p class="lead">This is a simple website for creating todos
+      in a manner that will help you better organize your workflow!</p>
+
+  <p class="lead">
+    <a class="btn btn-primary btn-lg" href="{% url 'login_user' %}" role="button">Learn more</a>
+  </p>
+</div>
 {% endblock %}

@@ -3,6 +3,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
 
 from django.db import transaction
+from django.http import HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
 from django.utils.http import urlsafe_base64_decode
 
@@ -51,6 +52,7 @@ def register_user(request):
     return render(request, 'register_form.html', context)
 
 
+
 def change_password(request, user_id, username):
     user = get_object_or_404(User, pk=user_id, username=username)
     valid = user.username == request.user.username and user.pk == request.user.pk
@@ -76,6 +78,7 @@ def reset_password(request):
             data = form.cleaned_data['email']
             user = get_object_or_404(User, email=data)
             form.save(subject_template_name='pass_reset.txt', email_template_name='instructions.txt', request=request)
+            return render(request,'see_email.html')
     form = CustomPasswordReset()
     return render(request, 'reset_password.html', {'form': form})
 
