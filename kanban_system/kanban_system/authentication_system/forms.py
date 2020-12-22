@@ -4,6 +4,7 @@ from django.contrib.auth.forms import UserCreationForm, AuthenticationForm, Pass
 from base_stuff_system.models import ExtendedUser
 from django import forms
 from django.contrib.auth.models import User
+from .validators import unique_username, unique_email
 
 
 class SignUpForm(UserCreationForm):
@@ -18,6 +19,8 @@ class SignUpForm(UserCreationForm):
         self.fields['first_name'].required = True
         self.fields['last_name'].required = True
         self.fields['email'].required = True
+        self.fields['username'].validators = [unique_username]
+        self.fields['email'].validators = [unique_email]
 
 
 class ExtendedProfileInfoForm(forms.ModelForm):

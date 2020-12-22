@@ -1,0 +1,76 @@
+
+{% if success %}
+        <h5 class="text-success"> {{ success }} </h5>
+{% endif %}
+{% if error %}
+        <h5 class="text-danger"> {{ error }} </h5>
+{% endif %}
+
+<div class="container">
+    <h2>{{ company.title }}</h2>
+    <div class="container mt-3 border-top">
+
+        <h4>Company's employees:</h4>
+        {% if employees %}
+        <ul class="list-group mt-3 list-group flush">
+            {% for employee in employees %}
+            <li class="list-group-item">
+                <div class="d-flex justify-content-between">
+                        <div>{{ employee }}</div>
+                        <div class="d-flex">
+                            <a href="{% url 'check_profile' request.user.pk employee.pk %}" class="btn btn-info mr-2">See user profile</a>
+                            <form method="post" action="{% url 'remove_employee' request.user.pk company.pk employee.pk %}">
+                                {% csrf_token %}
+                                <button type="submit" class="btn btn-dark text-white">Remove</button>
+                            </form>
+                        </div>
+                </div>
+            </li>
+            {% endfor %}
+        </ul>
+        {% else %}
+            <h2 class="mt-5">Your company does not have any employees!</h2>
+        {% endif %}
+        {% if request.user.pk != company.user %}
+            <div class="d-flex p-1 mt-4 justify-content-end">
+                <button type="button" data-toggle="collapse" data-target="#add-user" aria-expanded="false" aria-controls="add-user" class="btn-lg mr-2 btn-success">Add user!</button>
+                <button type="button" data-toggle="collapse" data-target="#change-title" aria-expanded="false" aria-controls="change-title" class="btn-lg mr-2 btn-warning">Change company title</button>
+                <a href="{% url 'delete_company' request.user.pk company.pk %}" role="button" class="btn btn-lg btn-danger">Delete</a>
+            </div>
+        {% else %}
+            <div class="d-flex p-1 mt-4 justify-content-end">
+                <button type="button" class="btn-lg btn-danger">Leave</button>
+            </div>
+        {% endif %}
+    </div>
+    {% if form_add_user.errors %}
+    <div class="collapse show w-50" id="add-user">
+    {% else %}
+    <div class="collapse w-50" id="add-user">
+    {% endif %}
+        <form method="post">
+            {% csrf_token %}
+            <strong>{{ form_add_user.username.label_tag }}</strong>
+            {{ form_add_user.username }}
+            <div class="text-danger mt-3">
+                {{ form_add_user.username.errors }}
+            </div>
+            <div class="d-flex p-1 mt-2 justify-content-end">
+                <button type="submit" class="btn btn-success">Submit</button>
+            </div>
+
+        </form>
+    </div>
+
+    <div class="collapse w-50" id="change-title">
+        <form method="post">
+            {% csrf_token %}
+            {{ form }}
+            <div class="d-flex p-1 mt-2 justify-content-end">
+                <button type="submit" class="btn btn-success">Submit</button>
+            </div>
+
+        </form>
+    </div>
+    </div>
+</div>

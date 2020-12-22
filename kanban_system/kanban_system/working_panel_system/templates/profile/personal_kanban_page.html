@@ -1,67 +1,24 @@
-
+{% if not info %}
+<div class="container mx-auto">
+    <strong><h2>You have no todos!</h2></strong>
+</div>
+{% endif %}
 <div class="d-flex" id="dashboard">
     <div class="d-flex flex-column p-1 flex-fill border" style="width:30%;">
-        <div class="d-flex border w-100 border-top-0 border-left-0 border-right-0 p-1 m-1 justify-content-around">
-            <h3>TO DO</h3>
-            <a href="{% url 'create_a_todo' request.user.pk %}" class="btn btn-success" role="button">Add</a>
-        </div>
-        {% if todos %}
-           {% for todo in todos %}
-                {% if not todo.in_progress %}
-        <div class="container d-flex flex-column p-1 border mb-1 rounded align-items-center">
-            <h5>{{ todo }}</h5>
-            <div class="btn-group dropleft">
-                    <button class="btn-sm btn-info dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Show more
-                    </button>
-                <div class="dropdown-menu bg-dark p-1" aria-labelledby="dropdownMenuButton">
-                    <a class="dropdown-item bg-primary " href="#">Description</a>
-                    <a class="dropdown-item bg-success " href="{% url 'start_to_do' request.user.pk todo.pk %}">Start</a>
-                    <a class="dropdown-item bg-warning " href="#">Add note</a>
-                    {% if todo.user == request.user %}
-                        <a class="dropdown-item bg-danger" href="#">Edit</a>
-                        <a class="dropdown-item bg-light" href="#">Delete </a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
+        {% include 'profile/todo_columns/todo_column.html' %}
     </div>
     <div class="d-flex flex-column p-1 flex-fill border align-items-center" style="width:30%;">
-        <div class="d-flex border w-100 border-top-0 border-left-0 border-right-0 p-1 m-1 justify-content-around">
-            <h3>IN PROGRESS</h3>
-        </div>
-        {% if todos %}
-           {% for todo in todos %}
-                {% if todo.in_progress %}
-        <div class="container d-flex flex-column p-1 border mb-1 rounded align-items-center">
-            <h5>{{ todo }}</h5>
-            <div class="btn-group dropleft">
-                    <button class="btn-sm btn-info dropdown-toggle" type="button" id="dropdownMenuButtonSec" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                            Show more
-                    </button>
-                <div class="dropdown-menu bg-dark p-1" aria-labelledby="dropdownMenuButtonSec">
-                    <a class="dropdown-item bg-primary " href="#">Description</a>
-                    <a class="dropdown-item bg-success " href="#">Finish</a>
-                    <a class="dropdown-item bg-warning " href="#">Add note</a>
-                    {% if todo.user == request.user %}
-                        <a class="dropdown-item bg-danger" href="#">Edit</a>
-                        <a class="dropdown-item bg-light" href="#">Delete </a>
-                    {% endif %}
-                </div>
-            </div>
-        </div>
-                {% endif %}
-            {% endfor %}
-        {% endif %}
-
+        {% include 'profile/todo_columns/in_progress.html' %}
     </div>
     <div class="d-flex flex-column p-1 flex-fill border align-items-center" style="width:30%;">
-        <div class="d-flex border w-100 border-top-0 border-left-0 border-right-0 p-1 m-1 justify-content-around">
-            <h3>DONE</h3>
-        </div>
-
+        {% include 'profile/todo_columns/is_done.html' %}
     </div>
 </div>
+
+
+
+
+
+
+
+

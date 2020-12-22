@@ -1,0 +1,56 @@
+<div class="d-flex border w-100 border-top-0 border-left-0 border-right-0 p-1 m-1 justify-content-around">
+    <h3>DONE</h3>
+</div>
+{% if todos %}
+{% for todo in todos %}
+{% if todo.is_done %}
+<div class="container d-flex flex-column p-1 border mb-1 rounded align-items-center">
+    <h5>{{ todo }}</h5>
+    <div class="d-flex p-1 m-1">
+        {% if todo.company %}
+        {% if todo.company.user == request.user and todo.user == request.user %}
+        <small><strong>{{ todo.company }}(own):</strong> Company Todo</small>
+        {% elif todo.company.user == request.user  %}
+        <small><strong>{{ todo.company }}(own):</strong> Assigned to: {{ todo.user.first_name }} {{ todo.user.last_name }}</small>
+        {% else %}
+        <small><strong>{{ todo.company }}(hired):</strong> Assigned by: {{ todo.company.user.first_name }} {{ todo.company.user.last_name }}</small>
+        {% endif %}
+        {% else %}
+        <small><strong>Personal Todo</strong></small>
+        {% endif %}
+    </div>
+    <div class="btn-group dropleft mb-1">
+        <button class="btn-sm btn-info mr-1 dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+            Show more
+        </button>
+        {% if todo.company.user == request.user %}
+        <button class="btn-sm btn-dark  dropdown-toggle" type="button" data-toggle="collapse" data-target="#num-{{ todo.pk }}" aria-expanded="false" aria-controls="#num-{{ todo.pk }}">
+            Info
+        </button>
+        {% endif %}
+        <div class="dropdown-menu bg-dark p-1" aria-labelledby="dropdownMenuButton">
+            <a class="dropdown-item bg-warning" href="{% url 'show_todo' request.user.pk todo.pk %}">Description</a>
+            {% if todo.company %}
+                {% if todo.company.user == request.user %}
+                <a class="dropdown-item bg-success " href="{% url 'restart_the_todo' request.user.pk todo.pk %}">Restart</a>
+                <a class="dropdown-item bg-danger" href="{% url 'edit_todo' request.user.pk todo.pk %}">Edit</a>
+                <a class="dropdown-item bg-light" href="{% url 'delete_todo' request.user.pk todo.pk %}">Delete</a>
+                {% endif %}
+            {% else %}
+                <a class="dropdown-item bg-success " href="{% url 'restart_the_todo' request.user.pk todo.pk %}">Restart</a>
+                <a class="dropdown-item bg-danger" href="{% url 'edit_todo' request.user.pk todo.pk %}">Edit</a>
+                <a class="dropdown-item bg-light" href="{% url 'delete_todo' request.user.pk todo.pk %}">Delete </a>
+            {% endif %}
+        </div>
+    </div>
+    {% if request.user == todo.company.user %}
+    <div class="collapse" id="num-{{ todo.pk }}">
+        <div class="text-success">Another task is finished!</div>
+    </div>
+    {% else %}
+        <div class="text-success">Great Job!</div>
+    {% endif %}
+</div>
+{% endif %}
+{% endfor %}
+{% endif %}
