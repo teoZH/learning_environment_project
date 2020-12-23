@@ -4,7 +4,8 @@ from django.http import HttpResponse
 from django.shortcuts import render, get_object_or_404, redirect
 from authentication_system.forms import ExtendedProfileInfoForm
 from base_stuff_system.models import ExtendedUser, Todo, Company, Notes
-from .forms import TodoForm, NotesForm, CompanyForm, EditProfileInfo, AddUserForm
+from .forms import TodoForm, NotesForm, CompanyForm, EditProfileInfo, AddUserForm, AddUserToTODO, \
+    return_form_populated, return_position_form
 from django.db.models import ObjectDoesNotExist
 from .validators import check_for_object_availability, check_correct_user
 
@@ -59,24 +60,22 @@ def see_other_profile(request, user_id, profile_id):
 @check_correct_user
 def show_pers_kanban(request, user_id):
     todos = Todo.objects.select_related('company__user')
-    user_groups = {f"{company.title}": company.employee.all() for company in Company.objects.filter(user=request.user)}
-    if request.method == 'POST':
-        try:
-            todo = Todo.objects.get(pk=request.POST['todo'])
-            user = User.objects.get(username=request.POST['username'])
-            if todo.user == user:
-                todo.form_error = True
-            else:
-                todo.user = user
-            todo.save()
+    info = [[todo, return_form_populated(AddUserToTODO, todo)] for todo in todos]
 
-        except (ObjectDoesNotExist, KeyError):
+    if request.method == 'POST':
+        user = check_for_object_availability(int(request.POST['add_user']), User)
+        todo = check_for_object_availability(int(request.POST['todo_number']), Todo)
+        if not todo or not user:
             return render(request, 'access/not_authorized.html')
-    if request.method == "GET":
-        for todo in todos:
-            todo.form_error = False
-    return render(request, 'show_user_kanban.html', {'todos': todos,
-                                                     'groups': user_groups})
+
+        pos = return_position_form(info, todo)
+        if info[pos][0] != todo:
+            return render(request, 'access/not_authorized.html')
+        info[pos][1] = return_form_populated(AddUserToTODO, todo, request)
+        if info[pos][1].is_valid():
+            info[pos][0].user = user
+            info[pos][0].save()
+    return render(request, 'show_user_kanban.html', {'info': info})
 
 
 @check_correct_user
@@ -101,6 +100,8 @@ def show_todo_description(request, user_id, todo_id):
     notes = Notes.objects.all()
     user = User.objects.get(pk=user_id)
     todo = check_for_object_availability(todo_id, Todo)
+    if not todo:
+        return render(request, 'access/not_authorized.html')
     if request.method == 'POST':
         if 'delete' in request.POST:
             try:
@@ -134,8 +135,9 @@ def edit_user_todo(request, user_id, todo_id):
     todo = check_for_object_availability(todo_id, model=Todo)
     if not todo:
         return render(request, 'access/not_authorized.html')
-    if todo.company.user != request.user:
-        return render(request, 'access/not_authorized.html')
+    if todo.company:
+        if todo.company.user != request.user:
+            return render(request, 'access/not_authorized.html')
     if request.method == 'POST':
         form = TodoForm(request.POST, instance=todo)
         if form.is_valid():
@@ -157,8 +159,12 @@ def delete_user_todo(request, user_id, todo_id):
     todo = check_for_object_availability(todo_id, Todo)
     if not todo:
         return render(request, 'access/not_authorized.html')
-    if todo.user != user or todo.user != request.user:
-        return render(request, 'access/not_authorized.html')
+    if todo.company:
+        if todo.company.user != request.user:
+            return render(request, 'access/not_authorized.html')
+    else:
+        if todo.user != request.user:
+            return render(request, 'access/not_authorized.html')
 
     todo.delete()
 
@@ -244,7 +250,8 @@ def show_companies(request, user_id):
         'companies': companies,
         'success': success,
         'error': error,
-        'form': form
+        'form': form,
+        'hired': False
     }
     return render(request, 'show_user_companies.html', context)
 
@@ -345,7 +352,8 @@ def show_hired_by(request, user_id):
     companies = Company.objects.all()
     valid_companies = [c for c in companies if user in c.employee.all()]
     context = {
-        'companies': valid_companies
+        'companies': valid_companies,
+        'hired': True
     }
     return render(request, 'show_user_companies.html', context)
 
@@ -356,4 +364,4 @@ def leave_company(request, user_id, company_id):
     if not company_id:
         return render(request, 'access/not_authorized.html')
     company.employee.remove(request.user)
-    return redirect('show_hired',request.user.pk)
+    return redirect('show_hired', request.user.pk)

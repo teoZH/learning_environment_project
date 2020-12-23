@@ -11,7 +11,7 @@
         {% if todo.company.user == request.user and todo.user == request.user %}
         <small><strong>{{ todo.company }}(own):</strong> Company Todo</small>
         {% elif todo.company.user == request.user  %}
-        <small><strong>{{ todo.company }}(own):</strong> Assigned to: {{ todo.user.first_name }} {{ todo.user.last_name }}</small>
+        <small><strong>{{ todo.company }}(own):</strong>  Assigned to: {{ todo.user.first_name }} {{ todo.user.last_name }}</small>
         {% else %}
         <small><strong>{{ todo.company }}(hired):</strong> Assigned by: {{ todo.company.user.first_name }} {{ todo.company.user.last_name }}</small>
         {% endif %}
@@ -53,7 +53,7 @@
                 <div class="form-group">
                     <label for="companies-users">Select an user:</label>
                     <input type="hidden" value="{{ todo.pk }}" name="todo">
-                    {% if groups %}
+                    {% if available %}
                     <select class="form-control" id="companies-users" name="username">
                         {% for group_name,queryset in groups.items %}
                         {% if group_name == todo.company.title %}

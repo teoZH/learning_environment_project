@@ -1,5 +1,6 @@
-
+{% if not hired %}
 <a class="btn btn-primary btn-block w-25 p-4 mb-3" href="{% url 'create_company' request.user.pk %}" role="button">Create new company!</a>
+{% endif %}
 
 {% if companies %}
     {% if success %}
@@ -61,6 +62,10 @@
 
     </div>
 {% else %}
-<h2>You have no companies!</h2>
+    {% if not hired %}
+        <h2>You have no companies!</h2>
+    {% else %}
+        <h2>Not hired by anyone!</h2>
+    {% endif %}
 {% endif %}
 
