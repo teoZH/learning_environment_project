@@ -221,7 +221,6 @@ def restart_todo(request, user_id, kanban_id):
 @check_correct_user
 def show_companies(request, user_id):
     success = None
-    error = None
     companies = Company.objects.filter(user=request.user)
 
     if request.method == 'POST':
@@ -249,7 +248,6 @@ def show_companies(request, user_id):
     context = {
         'companies': companies,
         'success': success,
-        'error': error,
         'form': form,
         'hired': False
     }

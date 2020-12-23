@@ -6,8 +6,8 @@
     {% if success %}
         <h5 class="text-success"> {{ success }} </h5>
     {% endif %}
-    {% if error %}
-        <h5 class="text-danger"> {{ error }} </h5>
+    {% if form.errors %}
+        <h5 class="text-danger"> {{ form.username.errors }} </h5>
     {% endif %}
     <div class="row row-cols-3">
             {% for company in companies %}
@@ -17,13 +17,13 @@
                     </div>
                     <div class="d-flex m-1 p-3 border-top justify-content-end">
                         {% if request.user == company.user %}
-                            <button type="button" class="btn m-1 btn-success" data-toggle="modal" data-target="#{{ company.title }}" >Add user</button>
-                            <a href="{% url 'show_company' request.user.pk company.pk %}" role="button" class="btn m-1 btn-info">Information</a>
+                            <a role="button" class="btn  btn-success mr-1" data-toggle="modal" href="#{{ company.title }}" >Add user</a>
+                            <a href="{% url 'show_company' request.user.pk company.pk %}" role="button" class="btn  btn-info">Information</a>
                         {% else %}
                         <a href="{% url 'leave' request.user.pk company.pk %}" role="button" class="btn m-1 btn-dark">LEAVE</a>
                         {% endif %}
                     </div>
-                    <div class="modal show" id="{{ company.title }}" tabindex="-1" role="dialog" aria-labelledby="{{ company.title }}Label" aria-hidden="true">
+                    <div class="modal fade" id="{{ company.title }}" tabindex="-1" role="dialog" aria-labelledby="{{ company.title }}Label" aria-hidden="true">
                       <div class="modal-dialog" role="document">
                         <div class="modal-content">
                           <div class="modal-header">
@@ -36,11 +36,9 @@
                             <form method="post" id="{{ company }}-form">
                               {% csrf_token %}
                               <div class="form-group">
-                                  <!---<label for="{{ company.title }}ID" class="col-form-label">Type a <strong>valid</strong> username! </label>
 
-                                  <input type="text" class="form-control" id="{{ company.title }}ID" name="username"> -->
                                   <input type="hidden" name="company" value="{{ company.pk }}">
-                                  {{ form.username.label_tag }}
+                                  <strong>{{ form.username.label_tag }}</strong>
                                   {{ form.username }}
                                   <div class="text-danger mt-2">
                                       {{ form.username.errors }}
